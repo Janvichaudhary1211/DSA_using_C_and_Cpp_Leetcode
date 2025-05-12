@@ -16,7 +16,7 @@ public:
 
 class Solution {
 public:
-    void insertAtTail(Node * &head, Node * &tail, int data){
+ void insertAtTail(Node * &head, Node * &tail, int data){
         Node * newNode = new Node(data);
         if(head == NULL){
             head = newNode;
@@ -35,20 +35,33 @@ public:
             insertAtTail(cloneHead, cloneTail, temp->val);
             temp = temp->next;
         }
-        unordered_map<Node * , Node *> oldToNew;
         Node * original = head;
         Node * clone = cloneHead;
         while(original != NULL && clone != NULL){
-            oldToNew[original] = clone;
-            original = original->next;
-            clone = clone->next;
+            Node * next = original->next;
+            original->next = clone;
+            original = next;
+
+            next = clone->next;
+            clone->next = original;
+            clone = next;
         }
-        original = head;
-        clone = cloneHead;
-        while(original != NULL){
-           clone->random = oldToNew[original->random];
-           original = original->next;
-           clone = clone->next;
+         temp = head;
+        while(temp != NULL){
+            if(temp->next != NULL){
+                temp->next->random = temp->random ? temp->random->next : temp->random;
+            }
+            temp = temp->next->next;
+        }
+           original = head;
+          clone = cloneHead;
+        while(original != NULL && clone != NULL){
+            original->next = clone->next;
+            original = original->next;
+            if(original != NULL){
+                clone->next = original->next;
+            }
+            clone = clone->next;
         }
         return cloneHead;
     }
